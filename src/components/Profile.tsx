@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LogOut, Lock, User as UserIcon } from 'lucide-react';
+import { LogOut, Lock, User as UserIcon, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { apiService } from '../services/apiService';
 
@@ -47,6 +47,20 @@ export const Profile = () => {
 
   return (
     <div className="min-h-screen bg-black text-white px-6 py-8 pb-24">
+      <style>{`
+        @keyframes slide-up {
+          from {
+            transform: translateY(100%);
+          }
+          to {
+            transform: translateY(0);
+          }
+        }
+        .animate-slide-up {
+          animation: slide-up 0.3s ease-out;
+        }
+      `}</style>
+      
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold mb-2">Profile</h1>
@@ -147,51 +161,68 @@ export const Profile = () => {
         </div>
       </div>
 
+      {/* Bottom Sheet for Password Reset */}
       {showPasswordModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-6">
-          <div className="bg-zinc-900 rounded-3xl p-6 w-full max-w-sm border border-zinc-800">
-            <h2 className="text-xl font-bold mb-6">Reset Password</h2>
+        <>
+          <div 
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+            onClick={() => setShowPasswordModal(false)}
+          />
+          <div className="fixed inset-x-0 bottom-0 z-50 animate-slide-up">
+            <div className="bg-zinc-900 rounded-t-3xl border-t border-zinc-800 max-w-md mx-auto">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-bold">Reset Password</h3>
+                  <button
+                    onClick={() => setShowPasswordModal(false)}
+                    className="w-8 h-8 rounded-full bg-zinc-800/50 flex items-center justify-center hover:bg-zinc-800 transition-all"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
 
-            <div className="space-y-4 mb-6">
-              <input
-                type="password"
-                placeholder="Current Password"
-                value={oldPassword}
-                onChange={(e) => setOldPassword(e.target.value)}
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-600"
-              />
-              <input
-                type="password"
-                placeholder="New Password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-600"
-              />
-              <input
-                type="password"
-                placeholder="Confirm New Password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-600"
-              />
-            </div>
+                <div className="space-y-4 mb-6">
+                  <input
+                    type="password"
+                    placeholder="Current Password"
+                    value={oldPassword}
+                    onChange={(e) => setOldPassword(e.target.value)}
+                    className="w-full bg-zinc-800/50 border border-zinc-700 rounded-2xl px-4 py-4 text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-600"
+                  />
+                  <input
+                    type="password"
+                    placeholder="New Password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full bg-zinc-800/50 border border-zinc-700 rounded-2xl px-4 py-4 text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-600"
+                  />
+                  <input
+                    type="password"
+                    placeholder="Confirm New Password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full bg-zinc-800/50 border border-zinc-700 rounded-2xl px-4 py-4 text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-600"
+                  />
+                </div>
 
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowPasswordModal(false)}
-                className="flex-1 bg-zinc-800 rounded-xl py-3 font-medium hover:bg-zinc-700 transition-all"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handlePasswordReset}
-                className="flex-1 bg-white text-black rounded-xl py-3 font-medium hover:bg-zinc-100 transition-all"
-              >
-                Update
-              </button>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowPasswordModal(false)}
+                    className="flex-1 bg-zinc-800 rounded-2xl py-4 font-semibold hover:bg-zinc-700 transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handlePasswordReset}
+                    className="flex-1 bg-white text-black rounded-2xl py-4 font-semibold hover:bg-zinc-100 transition-all"
+                  >
+                    Update
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
