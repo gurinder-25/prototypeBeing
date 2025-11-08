@@ -148,15 +148,6 @@ export const Stats = () => {
 
   return (
     <div className="min-h-screen bg-black text-white px-6 py-8 pb-24">
-      <style>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold mb-2">Statistics</h1>
@@ -164,7 +155,7 @@ export const Stats = () => {
         </div>
 
         {/* CALENDAR SIZE REDUCED - Applied scale-90 and adjusted padding */}
-        <div className="bg-zinc-900/30 rounded-3xl border border-zinc-800/50 overflow-hidden scale-100 origin-top">
+        <div className="bg-zinc-900/30 rounded-3xl border border-zinc-800/50 overflow-hidden scale-90 origin-top">
           <div className="p-5">
             <div className="flex items-center justify-between mb-5">
               <button
@@ -206,7 +197,7 @@ export const Stats = () => {
 
             {/* Month Picker */}
             {showMonthPicker && (
-              <div className="mb-5 bg-zinc-800/50 rounded-2xl p-3 max-h-56 overflow-y-auto backdrop-blur-xl scrollbar-hide">
+              <div className="mb-5 bg-zinc-800/50 rounded-2xl p-3 max-h-56 overflow-y-auto backdrop-blur-xl">
                 <div className="space-y-1">
                   {months.map((month, index) => (
                     <button
@@ -227,7 +218,7 @@ export const Stats = () => {
 
             {/* Year Picker */}
             {showYearPicker && (
-              <div className="mb-5 bg-zinc-800/50 rounded-2xl p-3 max-h-56 overflow-y-auto backdrop-blur-xl scrollbar-hide">
+              <div className="mb-5 bg-zinc-800/50 rounded-2xl p-3 max-h-56 overflow-y-auto backdrop-blur-xl">
                 <div className="space-y-1">
                   {availableYears.map((year) => (
                     <button

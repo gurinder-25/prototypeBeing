@@ -14,7 +14,7 @@ export const Profile = () => {
     name: user?.name || '',
     age: user?.age?.toString() || '',
     gender: user?.gender || '',
-    phoneNumber: user?.phoneNumber || '',
+    email: user?.email || '',
   });
 
   const handleSave = async () => {
@@ -24,7 +24,7 @@ export const Profile = () => {
         name: formData.name,
         age: formData.age ? parseInt(formData.age) : undefined,
         gender: formData.gender,
-        phoneNumber: formData.phoneNumber,
+        phoneNumber: formData.email,
       });
       updateUser(updatedUser);
       setIsEditing(false);
@@ -58,8 +58,8 @@ export const Profile = () => {
             <UserIcon size={40} className="text-zinc-600" />
           </div>
           <div className="text-center">
-            <div className="text-xl font-semibold">{user?.username}</div>
-            <div className="text-zinc-500 text-sm">{user?.email}</div>
+            <div className="text-xl font-semibold">{user?.name}</div>
+            <div className="text-zinc-500 text-sm">{user?.username}</div>
           </div>
         </div>
 
@@ -111,11 +111,11 @@ export const Profile = () => {
               </div>
 
               <div>
-                <label className="text-zinc-500 text-sm mb-2 block">Phone Number</label>
+                <label className="text-zinc-500 text-sm mb-2 block">Email</label>
                 <input
                   type="tel"
-                  value={formData.phoneNumber}
-                  onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   disabled={!isEditing}
                   className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-3 text-white disabled:opacity-50 focus:outline-none focus:border-zinc-700"
                 />
