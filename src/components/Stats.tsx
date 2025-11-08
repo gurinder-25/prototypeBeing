@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { apiService } from '../services/apiService';
 import { Stats as StatsType } from '../types';
 
@@ -156,6 +156,17 @@ export const Stats = () => {
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
+        @keyframes slide-up {
+          from {
+            transform: translateY(100%);
+          }
+          to {
+            transform: translateY(0);
+          }
+        }
+        .animate-slide-up {
+          animation: slide-up 0.3s ease-out;
+        }
       `}</style>
       <div className="space-y-8">
         <div>
@@ -163,7 +174,7 @@ export const Stats = () => {
           <p className="text-zinc-500 text-sm">Track your meditation journey</p>
         </div>
 
-        {/* CALENDAR SIZE REDUCED - Applied scale-90 and adjusted padding */}
+        {/* CALENDAR SIZE REDUCED - Applied scale-100 and adjusted padding */}
         <div className="bg-zinc-900/30 rounded-3xl border border-zinc-800/50 overflow-hidden scale-100 origin-top">
           <div className="p-5">
             <div className="flex items-center justify-between mb-5">
@@ -177,7 +188,7 @@ export const Stats = () => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => {
-                    setShowMonthPicker(!showMonthPicker);
+                    setShowMonthPicker(true);
                     setShowYearPicker(false);
                   }}
                   className="text-base font-semibold hover:text-zinc-300 transition-colors px-2 py-1 rounded-lg hover:bg-zinc-800/30"
@@ -187,7 +198,7 @@ export const Stats = () => {
                 <span className="text-zinc-600">|</span>
                 <button
                   onClick={() => {
-                    setShowYearPicker(!showYearPicker);
+                    setShowYearPicker(true);
                     setShowMonthPicker(false);
                   }}
                   className="text-base font-semibold hover:text-zinc-300 transition-colors px-2 py-1 rounded-lg hover:bg-zinc-800/30"
@@ -204,48 +215,6 @@ export const Stats = () => {
               </button>
             </div>
 
-            {/* Month Picker */}
-            {showMonthPicker && (
-              <div className="mb-5 bg-zinc-800/50 rounded-2xl p-3 max-h-56 overflow-y-auto backdrop-blur-xl scrollbar-hide">
-                <div className="space-y-1">
-                  {months.map((month, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleMonthSelect(index)}
-                      className={`w-full py-3 px-4 rounded-xl text-sm font-medium transition-all text-left ${
-                        index === currentMonth
-                          ? 'bg-white text-black'
-                          : 'bg-zinc-900/30 hover:bg-zinc-900/60 text-zinc-300'
-                      }`}
-                    >
-                      {month}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Year Picker */}
-            {showYearPicker && (
-              <div className="mb-5 bg-zinc-800/50 rounded-2xl p-3 max-h-56 overflow-y-auto backdrop-blur-xl scrollbar-hide">
-                <div className="space-y-1">
-                  {availableYears.map((year) => (
-                    <button
-                      key={year}
-                      onClick={() => handleYearSelect(year)}
-                      className={`w-full py-3 px-4 rounded-xl text-sm font-medium transition-all text-left ${
-                        year === currentYear
-                          ? 'bg-white text-black'
-                          : 'bg-zinc-900/30 hover:bg-zinc-900/60 text-zinc-300'
-                      }`}
-                    >
-                      {year}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
             <div className="grid grid-cols-7 gap-1.5 mb-3">
               {daysOfWeek.map((day) => (
                 <div key={day} className="text-center text-[10px] font-semibold text-zinc-600">
@@ -259,6 +228,92 @@ export const Stats = () => {
             </div>
           </div>
         </div>
+
+        {/* Bottom Sheet for Month Picker */}
+        {showMonthPicker && (
+          <>
+            <div 
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+              onClick={() => setShowMonthPicker(false)}
+            />
+            <div className="fixed inset-x-0 bottom-0 z-50 animate-slide-up">
+              <div className="bg-zinc-900 rounded-t-3xl border-t border-zinc-800 max-w-md mx-auto">
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-semibold">Select Month</h3>
+                    <button
+                      onClick={() => setShowMonthPicker(false)}
+                      className="w-8 h-8 rounded-full bg-zinc-800/50 flex items-center justify-center hover:bg-zinc-800 transition-all"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+                  
+                  <div className="max-h-80 overflow-y-auto scrollbar-hide">
+                    <div className="space-y-2">
+                      {months.map((month, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleMonthSelect(index)}
+                          className={`w-full py-4 px-5 rounded-2xl text-base font-medium transition-all text-left ${
+                            index === currentMonth
+                              ? 'bg-white text-black'
+                              : 'bg-zinc-800/30 hover:bg-zinc-800/50 text-zinc-300'
+                          }`}
+                        >
+                          {month}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Bottom Sheet for Year Picker */}
+        {showYearPicker && (
+          <>
+            <div 
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+              onClick={() => setShowYearPicker(false)}
+            />
+            <div className="fixed inset-x-0 bottom-0 z-50 animate-slide-up">
+              <div className="bg-zinc-900 rounded-t-3xl border-t border-zinc-800 max-w-md mx-auto">
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-semibold">Select Year</h3>
+                    <button
+                      onClick={() => setShowYearPicker(false)}
+                      className="w-8 h-8 rounded-full bg-zinc-800/50 flex items-center justify-center hover:bg-zinc-800 transition-all"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+                  
+                  <div className="max-h-80 overflow-y-auto scrollbar-hide">
+                    <div className="space-y-2">
+                      {availableYears.map((year) => (
+                        <button
+                          key={year}
+                          onClick={() => handleYearSelect(year)}
+                          className={`w-full py-4 px-5 rounded-2xl text-base font-medium transition-all text-left ${
+                            year === currentYear
+                              ? 'bg-white text-black'
+                              : 'bg-zinc-800/30 hover:bg-zinc-800/50 text-zinc-300'
+                          }`}
+                        >
+                          {year}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
 
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-zinc-900/30 rounded-3xl p-6 border border-zinc-800/50">

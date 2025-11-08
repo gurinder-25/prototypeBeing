@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Play, Pause, RotateCcw } from 'lucide-react';
+import { Play, Pause, RotateCcw, X } from 'lucide-react';
 import { apiService } from '../services/apiService';
 
 type Mode = 'stopwatch' | 'timer';
@@ -155,6 +155,29 @@ export const Timer = () => {
 
   return (
     <div className="min-h-screen bg-black flex flex-col px-6 pt-8 pb-24 relative overflow-hidden">
+      <style>{`
+        @keyframes slide-up {
+          from {
+            transform: translateY(100%);
+          }
+          to {
+            transform: translateY(0);
+          }
+        }
+        .animate-slide-up {
+          animation: slide-up 0.3s ease-out;
+        }
+        /* Hide number input spinners */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        input[type="number"] {
+          -moz-appearance: textfield;
+        }
+      `}</style>
+
       <div className="absolute inset-0 bg-gradient-to-b from-zinc-900/20 via-transparent to-transparent pointer-events-none" />
 
       <div className="relative z-10 flex-1 flex flex-col">
@@ -262,53 +285,62 @@ export const Timer = () => {
         </div>
       </div>
 
+      {/* Bottom Sheet for Timer Setup */}
       {showTimerSetup && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-6">
-          <div className="bg-zinc-900 rounded-3xl p-8 w-full max-w-sm border border-zinc-800">
-            <h2 className="text-2xl font-bold mb-8">Set Timer</h2>
+        <>
+          <div 
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+            onClick={() => setShowTimerSetup(false)}
+          />
+          <div className="fixed inset-x-0 bottom-0 z-50 animate-slide-up">
+            <div className="bg-zinc-900 rounded-t-3xl border-t border-zinc-800 max-w-md mx-auto">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-bold">Set Timer</h3>
+                  <button
+                    onClick={() => setShowTimerSetup(false)}
+                    className="w-8 h-8 rounded-full bg-zinc-800/50 flex items-center justify-center hover:bg-zinc-800 transition-all"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+                
+                <div className="space-y-5 mb-6">
+                  <div>
+                    <label className="text-zinc-500 text-sm mb-3 block font-medium">Minutes</label>
+                    <input
+                      type="number"
+                      value={inputMinutes}
+                      onChange={(e) => setInputMinutes(e.target.value)}
+                      min="0"
+                      max="999"
+                      className="w-full bg-zinc-800/50 border border-zinc-700 rounded-2xl px-4 py-4 text-white text-center text-2xl font-semibold focus:outline-none focus:border-zinc-600 transition-all"
+                    />
+                  </div>
 
-            <div className="space-y-6 mb-8">
-              <div>
-                <label className="text-zinc-500 text-sm mb-3 block">Minutes</label>
-                <input
-                  type="number"
-                  value={inputMinutes}
-                  onChange={(e) => setInputMinutes(e.target.value)}
-                  min="0"
-                  max="999"
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-4 text-white text-center text-2xl font-semibold focus:outline-none focus:border-zinc-600"
-                />
+                  <div>
+                    <label className="text-zinc-500 text-sm mb-3 block font-medium">Seconds</label>
+                    <input
+                      type="number"
+                      value={inputSeconds}
+                      onChange={(e) => setInputSeconds(e.target.value)}
+                      min="0"
+                      max="59"
+                      className="w-full bg-zinc-800/50 border border-zinc-700 rounded-2xl px-4 py-4 text-white text-center text-2xl font-semibold focus:outline-none focus:border-zinc-600 transition-all"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleStartTimer}
+                  className="w-full bg-white text-black rounded-2xl py-4 font-semibold text-base hover:bg-zinc-100 transition-all"
+                >
+                  Start Timer
+                </button>
               </div>
-
-              <div>
-                <label className="text-zinc-500 text-sm mb-3 block">Seconds</label>
-                <input
-                  type="number"
-                  value={inputSeconds}
-                  onChange={(e) => setInputSeconds(e.target.value)}
-                  min="0"
-                  max="59"
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-4 text-white text-center text-2xl font-semibold focus:outline-none focus:border-zinc-600"
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowTimerSetup(false)}
-                className="flex-1 bg-zinc-800 rounded-xl py-3 font-medium hover:bg-zinc-700 transition-all"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleStartTimer}
-                className="flex-1 bg-white text-black rounded-xl py-3 font-medium hover:bg-zinc-100 transition-all"
-              >
-                Start
-              </button>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
