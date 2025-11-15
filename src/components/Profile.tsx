@@ -10,6 +10,8 @@ export const Profile = () => {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || '',
     age: user?.age?.toString() || '',
@@ -19,30 +21,55 @@ export const Profile = () => {
 
   const handleSave = async () => {
     if (user) {
-      const updatedUser = await apiService.updateProfile({
-        ...user,
-        name: formData.name,
-        age: formData.age ? parseInt(formData.age) : undefined,
-        gender: formData.gender,
-        phoneNumber: formData.email,
-      });
-      updateUser(updatedUser);
-      setIsEditing(false);
+      setLoading(true);
+      setError('');
+      try {
+        const updatedUser = await apiService.updateProfile({
+          ...user,
+          name: formData.name,
+          age: formData.age ? parseInt(formData.age) : undefined,
+          gender: formData.gender,
+          phoneNumber: formData.email,
+        });
+        updateUser(updatedUser);
+        setIsEditing(false);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to update profile');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   const handlePasswordReset = async () => {
     if (newPassword !== confirmPassword) {
-      alert('Passwords do not match');
+      setError('Passwords do not match');
       return;
     }
 
-    await apiService.resetPassword(oldPassword, newPassword);
-    setShowPasswordModal(false);
-    setOldPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
-    alert('Password updated successfully');
+    if (newPassword.length < 6) {
+      setError('New password must be at least 6 characters');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    try {
+      await apiService.resetPassword(oldPassword, newPassword);
+      setShowPasswordModal(false);
+      setOldPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to reset password');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    apiService.logout();
+    logout();
   };
 
   return (
@@ -72,7 +99,7 @@ export const Profile = () => {
             <UserIcon size={40} className="text-zinc-600" />
           </div>
           <div className="text-center">
-            <div className="text-xl font-semibold">{user?.name}</div>
+            <div className="text-xl font-semibold">{user?.name || user?.username}</div>
             <div className="text-zinc-500 text-sm">{user?.username}</div>
           </div>
         </div>
@@ -83,11 +110,16 @@ export const Profile = () => {
               <h2 className="text-lg font-semibold">Personal Details</h2>
               <button
                 onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
-                className="text-sm text-white font-medium"
+                disabled={loading}
+                className="text-sm text-white font-medium disabled:opacity-50"
               >
-                {isEditing ? 'Save' : 'Edit'}
+                {loading ? 'Saving...' : isEditing ? 'Save' : 'Edit'}
               </button>
             </div>
+
+            {error && (
+              <p className="text-red-400 text-sm">{error}</p>
+            )}
 
             <div className="space-y-4">
               <div>
@@ -127,7 +159,7 @@ export const Profile = () => {
               <div>
                 <label className="text-zinc-500 text-sm mb-2 block">Email</label>
                 <input
-                  type="tel"
+                  type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   disabled={!isEditing}
@@ -140,7 +172,10 @@ export const Profile = () => {
 
         <div className="space-y-3">
           <button
-            onClick={() => setShowPasswordModal(true)}
+            onClick={() => {
+              setShowPasswordModal(true);
+              setError('');
+            }}
             className="w-full bg-zinc-900/30 border border-zinc-800/50 rounded-2xl px-6 py-4 flex items-center justify-between hover:bg-zinc-900/50 transition-all"
           >
             <div className="flex items-center gap-3">
@@ -150,7 +185,7 @@ export const Profile = () => {
           </button>
 
           <button
-            onClick={logout}
+            onClick={handleLogout}
             className="w-full bg-red-500/10 border border-red-500/20 rounded-2xl px-6 py-4 flex items-center justify-between hover:bg-red-500/20 transition-all text-red-400"
           >
             <div className="flex items-center gap-3">
@@ -166,7 +201,10 @@ export const Profile = () => {
         <>
           <div 
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
-            onClick={() => setShowPasswordModal(false)}
+            onClick={() => {
+              setShowPasswordModal(false);
+              setError('');
+            }}
           />
           <div className="fixed inset-x-0 bottom-0 z-50 animate-slide-up">
             <div className="bg-zinc-900 rounded-t-3xl border-t border-zinc-800 max-w-md mx-auto">
@@ -174,12 +212,19 @@ export const Profile = () => {
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold">Reset Password</h3>
                   <button
-                    onClick={() => setShowPasswordModal(false)}
+                    onClick={() => {
+                      setShowPasswordModal(false);
+                      setError('');
+                    }}
                     className="w-8 h-8 rounded-full bg-zinc-800/50 flex items-center justify-center hover:bg-zinc-800 transition-all"
                   >
                     <X size={18} />
                   </button>
                 </div>
+
+                {error && (
+                  <p className="text-red-400 text-sm mb-4">{error}</p>
+                )}
 
                 <div className="space-y-4 mb-6">
                   <input
@@ -207,16 +252,20 @@ export const Profile = () => {
 
                 <div className="flex gap-3">
                   <button
-                    onClick={() => setShowPasswordModal(false)}
+                    onClick={() => {
+                      setShowPasswordModal(false);
+                      setError('');
+                    }}
                     className="flex-1 bg-zinc-800 rounded-2xl py-4 font-semibold hover:bg-zinc-700 transition-all"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handlePasswordReset}
-                    className="flex-1 bg-white text-black rounded-2xl py-4 font-semibold hover:bg-zinc-100 transition-all"
+                    disabled={loading}
+                    className="flex-1 bg-white text-black rounded-2xl py-4 font-semibold hover:bg-zinc-100 transition-all disabled:opacity-50"
                   >
-                    Update
+                    {loading ? 'Updating...' : 'Update'}
                   </button>
                 </div>
               </div>

@@ -62,7 +62,7 @@ export const Auth = () => {
           <div>
             <input
               type="text"
-              placeholder="Username"
+              placeholder={isLogin ? "Username or Email" : "Username"}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full bg-zinc-900/50 border border-zinc-800 rounded-2xl px-6 py-4 text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-700 transition-colors"
@@ -105,12 +105,6 @@ export const Auth = () => {
             {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Log in'}
           </button>
         </div>
-
-        {isLogin && (
-          <p className="text-xs text-center text-zinc-600 mt-4">
-            Demo: username: <span className="text-zinc-400">meditator</span> / password: <span className="text-zinc-400">password</span>
-          </p>
-        )}
       </div>
     </div>
   );

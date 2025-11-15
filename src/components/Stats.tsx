@@ -9,16 +9,37 @@ export const Stats = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showMonthPicker, setShowMonthPicker] = useState(false);
   const [showYearPicker, setShowYearPicker] = useState(false);
+  const [calendarData, setCalendarData] = useState<{ meditatedDates: string[]; missedDates: string[] } | null>(null);
 
   useEffect(() => {
     loadStats();
   }, []);
 
+  useEffect(() => {
+    loadCalendarData();
+  }, [currentDate]);
+
   const loadStats = async () => {
     setLoading(true);
-    const data = await apiService.getStats();
-    setStats(data);
-    setLoading(false);
+    try {
+      const data = await apiService.getStats();
+      setStats(data);
+    } catch (error) {
+      console.error('Failed to load stats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadCalendarData = async () => {
+    try {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth() + 1;
+      const data = await apiService.getCalendarData(year, month);
+      setCalendarData(data);
+    } catch (error) {
+      console.error('Failed to load calendar data:', error);
+    }
   };
 
   if (loading || !stats) {
@@ -28,19 +49,6 @@ export const Stats = () => {
       </div>
     );
   }
-
-  // Get meditation dates from all data
-  const getMeditationDates = () => {
-    const dates = new Set<string>();
-    [...stats.weeklyData, ...stats.monthlyData, ...stats.threeMonthData].forEach(item => {
-      if (item.minutes > 0) {
-        dates.add(item.date);
-      }
-    });
-    return Array.from(dates);
-  };
-
-  const meditationDates = getMeditationDates();
 
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -68,8 +76,9 @@ export const Stats = () => {
   };
 
   const isMeditationDay = (year: number, month: number, day: number) => {
+    if (!calendarData) return false;
     const dateStr = formatDate(year, month, day);
-    return meditationDates.includes(dateStr);
+    return calendarData.meditatedDates.includes(dateStr);
   };
 
   const isToday = (year: number, month: number, day: number) => {
@@ -174,7 +183,6 @@ export const Stats = () => {
           <p className="text-zinc-500 text-sm">Track your meditation journey</p>
         </div>
 
-        {/* CALENDAR SIZE REDUCED - Applied scale-100 and adjusted padding */}
         <div className="bg-zinc-900/30 rounded-3xl border border-zinc-800/50 overflow-hidden scale-100 origin-top">
           <div className="p-5">
             <div className="flex items-center justify-between mb-5">
