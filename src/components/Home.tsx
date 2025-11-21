@@ -49,23 +49,21 @@ export const Home = () => {
         setCurrentQuote(quotes[Math.floor(Math.random() * quotes.length)]);
         setIsChanging(false);
       }, 500);
-    }, 12000); // Change quote every 12 seconds
+    }, 12000);
 
     return () => clearInterval(interval);
   }, []);
 
   const handleGuides = () => {
-    // Navigate to guides page (placeholder for now)
     console.log('Navigate to Guides');
   };
 
   const handleInsights = () => {
-    // Navigate to insights page (placeholder for now)
     console.log('Navigate to Insights');
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col px-6 pt-0 pb-24 relative overflow-hidden">
+    <div className="h-screen bg-black text-white flex flex-col px-6 relative overflow-hidden">
       <style>{`
         @keyframes fade-in {
           from {
@@ -139,92 +137,98 @@ export const Home = () => {
         backgroundSize: '40px 40px'
       }} />
 
-      {/* Header Section */}
-      <div className="relative z-10 pt-12 pb-6 fade-in">
-        <h1 className="text-xl font-semibold tracking-[0.2em] text-zinc-400 mb-6">BEING</h1>
-        <div className="flex items-center gap-3">
-          <h2 className="text-3xl font-light tracking-tight">
-            Hi, <span className="font-medium">{user?.name || user?.username || 'there'}</span>
-          </h2>
-          <Sparkles size={24} className="text-zinc-600 float-animation" />
+      {/* Scrollable Content Container */}
+      <div className="flex-1 overflow-y-auto pb-24 scrollbar-hide">
+        <style>{`
+          .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+          }
+          .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+        `}</style>
+
+        {/* Header Section */}
+        <div className="relative z-10 pt-8 pb-4 fade-in">
+          <h1 className="text-xl font-semibold tracking-[0.2em] text-zinc-400 mb-4">BEING</h1>
+          <div className="flex items-center gap-3">
+            <h2 className="text-3xl font-light tracking-tight">
+              Hi, <span className="font-medium">{user?.name || user?.username || 'there'}</span>
+            </h2>
+            <Sparkles size={24} className="text-zinc-600 float-animation" />
+          </div>
         </div>
-      </div>
 
-      {/* Main Content - Quote Section */}
-      <div className="relative z-10 flex items-center justify-center py-6">
-        <div className="w-full max-w-lg fade-in" style={{ animationDelay: '0.2s' }}>
-          <div className="glass-morphism rounded-[2.5rem] p-8 relative overflow-hidden">
-            {/* Shimmer Effect */}
-            <div className="absolute inset-0 shimmer opacity-0 hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-            
-            {/* Quote Label */}
-            <div className="flex items-center gap-2 mb-6">
-              <div className="w-1 h-1 rounded-full bg-white opacity-60" />
-              <span className="text-xs tracking-[0.2em] text-zinc-500 uppercase">Daily Wisdom</span>
-            </div>
-
-            {/* Quote Content */}
-            <div className={`quote-transition ${isChanging ? 'quote-fade-out' : ''}`}>
-              <blockquote className="text-2xl font-light leading-relaxed tracking-tight mb-6 text-zinc-100">
-                "{currentQuote.text}"
-              </blockquote>
+        {/* Main Content - Quote Section */}
+        <div className="relative z-10 py-4">
+          <div className="w-full max-w-lg mx-auto fade-in" style={{ animationDelay: '0.2s' }}>
+            <div className="glass-morphism rounded-[2.5rem] p-6 relative overflow-hidden">
+              {/* Shimmer Effect */}
+              <div className="absolute inset-0 shimmer opacity-0 hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
               
-              <div className="flex items-center gap-3">
-                <div className="h-px flex-1 bg-gradient-to-r from-zinc-800 to-transparent" />
-                <p className="text-sm text-zinc-500 font-medium">— {currentQuote.author}</p>
+              {/* Quote Label */}
+              <div className="flex items-center gap-2 mb-4">
+                
+                <span className="text-xs tracking-[0.2em] text-zinc-500 uppercase">Daily Wisdom</span>
+              </div>
+
+              {/* Quote Content */}
+              <div className={`quote-transition ${isChanging ? 'quote-fade-out' : ''}`}>
+                <blockquote className="text-xl font-light leading-relaxed tracking-tight mb-4 text-zinc-100">
+                  "{currentQuote.text}"
+                </blockquote>
+                
+                <div className="flex items-center gap-3">
+                  <div className="h-px flex-1 bg-gradient-to-r from-zinc-800 to-transparent" />
+                  <p className="text-sm text-zinc-500 font-medium">— {currentQuote.author}</p>
+                </div>
               </div>
             </div>
-
-            {/* Decorative Corner Elements */}
-            <div className="absolute top-6 right-6 w-16 h-16 border-t border-r border-white/5 rounded-tr-3xl" />
-            <div className="absolute bottom-6 left-6 w-16 h-16 border-b border-l border-white/5 rounded-bl-3xl" />
           </div>
         </div>
-      </div>
 
-      {/* Bottom Action Buttons */}
-      <div className="relative z-10 space-y-4 pb-32 fade-in" style={{ animationDelay: '0.4s' }}>
-        <button
-          onClick={handleGuides}
-          className="w-full glass-morphism rounded-[2rem] p-6 hover:bg-white/[0.06] transition-all duration-500 active:scale-[0.98] group relative overflow-hidden"
-        >
-          <div className="absolute inset-0 shimmer opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-          <div className="relative flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-all duration-500">
-                <BookOpen size={22} className="text-zinc-400 group-hover:text-white transition-colors duration-500" />
+        {/* Bottom Action Buttons */}
+        <div className="relative z-10 space-y-3 pt-4 pb-8 fade-in" style={{ animationDelay: '0.4s' }}>
+          <button
+            onClick={handleGuides}
+            className="w-full glass-morphism rounded-[2rem] p-5 hover:bg-white/[0.06] transition-all duration-500 active:scale-[0.98] group relative overflow-hidden"
+          >
+            <div className="absolute inset-0 shimmer opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            <div className="relative flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-all duration-500">
+                  <BookOpen size={20} className="text-zinc-400 group-hover:text-white transition-colors duration-500" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-base font-medium tracking-tight mb-0.5">Guides</h3>
+                  <p className="text-sm text-zinc-600 group-hover:text-zinc-500 transition-colors duration-500">Learn meditation techniques</p>
+                </div>
               </div>
-              <div className="text-left">
-                <h3 className="text-lg font-medium tracking-tight mb-0.5">Guides</h3>
-                <p className="text-sm text-zinc-600 group-hover:text-zinc-500 transition-colors duration-500">Learn meditation techniques</p>
-              </div>
+              <ChevronRight size={20} className="text-zinc-600 group-hover:text-zinc-400 group-hover:translate-x-1 transition-all duration-300" />
             </div>
-            <ChevronRight size={20} className="text-zinc-600 group-hover:text-zinc-400 group-hover:translate-x-1 transition-all duration-300" />
-          </div>
-        </button>
+          </button>
 
-        <button
-          onClick={handleInsights}
-          className="w-full glass-morphism rounded-[2rem] p-6 hover:bg-white/[0.06] transition-all duration-500 active:scale-[0.98] group relative overflow-hidden"
-        >
-          <div className="absolute inset-0 shimmer opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-          <div className="relative flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-all duration-500">
-                <Lightbulb size={22} className="text-zinc-400 group-hover:text-white transition-colors duration-500" />
+          <button
+            onClick={handleInsights}
+            className="w-full glass-morphism rounded-[2rem] p-5 hover:bg-white/[0.06] transition-all duration-500 active:scale-[0.98] group relative overflow-hidden"
+          >
+            <div className="absolute inset-0 shimmer opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            <div className="relative flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-all duration-500">
+                  <Lightbulb size={20} className="text-zinc-400 group-hover:text-white transition-colors duration-500" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-base font-medium tracking-tight mb-0.5">Insights</h3>
+                  <p className="text-sm text-zinc-600 group-hover:text-zinc-500 transition-colors duration-500">Discover mindfulness wisdom</p>
+                </div>
               </div>
-              <div className="text-left">
-                <h3 className="text-lg font-medium tracking-tight mb-0.5">Insights</h3>
-                <p className="text-sm text-zinc-600 group-hover:text-zinc-500 transition-colors duration-500">Discover mindfulness wisdom</p>
-              </div>
+              <ChevronRight size={20} className="text-zinc-600 group-hover:text-zinc-400 group-hover:translate-x-1 transition-all duration-300" />
             </div>
-            <ChevronRight size={20} className="text-zinc-600 group-hover:text-zinc-400 group-hover:translate-x-1 transition-all duration-300" />
-          </div>
-        </button>
+          </button>
+        </div>
       </div>
-
-      {/* Bottom Ambient Line */}
-      <div className="absolute bottom-28 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
     </div>
   );
 };
