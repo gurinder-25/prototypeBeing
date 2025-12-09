@@ -181,7 +181,7 @@ export const Timer = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-zinc-900/20 via-transparent to-transparent pointer-events-none" />
 
       <div className="relative z-10 flex-1 flex flex-col">
-        <h1 className="text-3xl font-bold tracking-wide mb-8">Being</h1>
+        <h1 className="text-3xl font-bold tracking-wide mb-8">BeingOne</h1>
 
         <div className="flex gap-2 bg-zinc-900/50 rounded-2xl p-1 mb-12">
           <button

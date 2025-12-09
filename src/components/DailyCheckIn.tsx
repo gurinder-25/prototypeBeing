@@ -157,7 +157,7 @@ export const DailyCheckIn = ({ onComplete, onSkip }: DailyCheckInProps) => {
       {/* Header */}
       <div className="relative z-10 pt-16 pb-8">
         <div className="text-center">
-          <h1 className="text-xl font-semibold tracking-[0.2em] text-zinc-400">BEING</h1>
+          <h1 className="text-xl font-medium text-zinc-400">BeingOne</h1>
         </div>
       </div>
 

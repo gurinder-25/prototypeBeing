@@ -108,7 +108,7 @@ export const Auth = () => {
         {/* Logo & Header */}
         <div className="text-center space-y-6">
           <div>
-            <h1 className="text-5xl font-semibold tracking-[0.25em] text-white mb-6">BEING</h1>
+            <h1 className="text-5xl font-medium text-white mb-6">BeingOne</h1>
             <p className="text-zinc-500 text-lg tracking-wide font-light">Your journey to inner peace</p>
           </div>
         </div>

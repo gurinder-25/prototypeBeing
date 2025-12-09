@@ -151,7 +151,7 @@ export const Home = () => {
 
         {/* Header Section */}
         <div className="relative z-10 pt-8 pb-4 fade-in">
-          <h1 className="text-xl font-semibold tracking-[0.2em] text-zinc-400 mb-4">BEING</h1>
+          <h1 className="text-xl font-medium text-zinc-400 mb-4">BeingOne</h1>
           <div className="flex items-center gap-3">
             <h2 className="text-3xl font-light tracking-tight">
               Hi, <span className="font-medium">{user?.name || user?.username || 'there'}</span>
