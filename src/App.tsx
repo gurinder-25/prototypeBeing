@@ -5,6 +5,8 @@ import { Stats } from './components/Stats';
 import { Profile } from './components/Profile';
 import { DailyCheckIn } from './components/DailyCheckIn';
 import { Layout } from './components/Layout';
+import Guides from './components/Guides';
+import Insights from './components/Insights';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { apiService } from './services/apiService';
 
@@ -16,6 +18,7 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState<'home' | 'stats' | 'profile'>('home');
   const [showDailyCheckIn, setShowDailyCheckIn] = useState(false);
   const [hasCheckedInToday, setHasCheckedInToday] = useState(false);
+  const [activeView, setActiveView] = useState<'main' | 'guides' | 'insights'>('main');
 
   // Check if user has already checked in today
   useEffect(() => {
@@ -83,9 +86,24 @@ function AppContent() {
     );
   }
 
+  // Handle full-screen views (Guides & Insights)
+  if (activeView === 'guides') {
+    return <Guides onClose={() => setActiveView('main')} />;
+  }
+
+  if (activeView === 'insights') {
+    return <Insights onClose={() => setActiveView('main')} />;
+  }
+
+  // Main app with bottom navigation
   return (
     <Layout activeTab={activeTab} onTabChange={setActiveTab}>
-      {activeTab === 'home' && <Home />}
+      {activeTab === 'home' && (
+        <Home
+          onOpenGuides={() => setActiveView('guides')}
+          onOpenInsights={() => setActiveView('insights')}
+        />
+      )}
       {activeTab === 'stats' && <Stats />}
       {activeTab === 'profile' && <Profile />}
     </Layout>

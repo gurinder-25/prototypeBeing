@@ -37,7 +37,12 @@ const quotes = [
   }
 ];
 
-export const Home = () => {
+interface HomeProps {
+  onOpenGuides: () => void;
+  onOpenInsights: () => void;
+}
+
+export const Home = ({ onOpenGuides, onOpenInsights }: HomeProps) => {
   const { user } = useAuth();
   const [currentQuote, setCurrentQuote] = useState(quotes[0]);
   const [isChanging, setIsChanging] = useState(false);
@@ -55,11 +60,11 @@ export const Home = () => {
   }, []);
 
   const handleGuides = () => {
-    console.log('Navigate to Guides');
+    onOpenGuides();
   };
 
   const handleInsights = () => {
-    console.log('Navigate to Insights');
+    onOpenInsights();
   };
 
   return (
