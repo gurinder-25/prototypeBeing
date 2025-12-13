@@ -80,28 +80,20 @@ const Guides: React.FC<GuidesProps> = ({ onClose }) => {
         </div>
 
         {/* Header */}
-        <div className="sticky top-0 z-10 backdrop-blur-xl bg-black/80 border-b border-white/10">
-          <div className="max-w-2xl mx-auto px-6 py-4">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={onClose}
-                className="p-2 rounded-full hover:bg-white/5 transition-colors"
-              >
-                <ArrowLeft className="w-6 h-6 text-white" />
-              </button>
-              <div className="flex items-center gap-3">
-                <BookOpen className="w-7 h-7 text-white" />
-                <h1 className="text-2xl font-semibold text-white">Meditation Guides</h1>
-              </div>
-            </div>
+        <div className="relative z-10 pt-16 pb-8">
+          <div className="px-6 flex items-center gap-4">
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl hover:bg-white/5 transition-all duration-300 active:scale-95"
+            >
+              <ArrowLeft className="w-5 h-5 text-white" />
+            </button>
+            <h1 className="text-xl font-medium text-zinc-400">Guides</h1>
           </div>
         </div>
 
         {/* Articles Grid */}
-        <div className="max-w-2xl mx-auto px-6 py-8 pb-12">
-          <p className="text-zinc-400 mb-8 text-center">
-            Discover practical techniques and wisdom to deepen your practice
-          </p>
+        <div className="max-w-2xl mx-auto px-6 py-0 pb-12">
 
           <div className="space-y-4">
             {mockGuides.map((guide, index) => (
@@ -204,15 +196,15 @@ const Guides: React.FC<GuidesProps> = ({ onClose }) => {
       </div>
 
       {/* Header */}
-      <div className="sticky top-0 z-10 backdrop-blur-xl bg-black/80 border-b border-white/10">
-        <div className="max-w-2xl mx-auto px-6 py-4">
+      <div className="relative z-10 pt-16 pb-8">
+        <div className="px-6 flex items-center gap-4">
           <button
             onClick={handleBackToList}
-            className="flex items-center gap-2 text-white/70 hover:text-white transition-colors"
+            className="p-2 rounded-xl hover:bg-white/5 transition-all duration-300 active:scale-95"
           >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="text-sm font-medium">Back to Guides</span>
+            <ArrowLeft className="w-5 h-5 text-white" />
           </button>
+          <h1 className="text-xl font-medium text-zinc-400">Guides</h1>
         </div>
       </div>
 

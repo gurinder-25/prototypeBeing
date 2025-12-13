@@ -20,6 +20,28 @@ function AppContent() {
   const [hasCheckedInToday, setHasCheckedInToday] = useState(false);
   const [activeView, setActiveView] = useState<'main' | 'guides' | 'insights'>('main');
 
+  // Handle browser back button
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state?.view) {
+        setActiveView(event.state.view);
+      } else {
+        setActiveView('main');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    // Set initial state
+    if (!window.history.state) {
+      window.history.replaceState({ view: 'main' }, '', window.location.href);
+    }
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
   // Check if user has already checked in today
   useEffect(() => {
     if (user) {
@@ -88,11 +110,15 @@ function AppContent() {
 
   // Handle full-screen views (Guides & Insights)
   if (activeView === 'guides') {
-    return <Guides onClose={() => setActiveView('main')} />;
+    return <Guides onClose={() => {
+      window.history.back();
+    }} />;
   }
 
   if (activeView === 'insights') {
-    return <Insights onClose={() => setActiveView('main')} />;
+    return <Insights onClose={() => {
+      window.history.back();
+    }} />;
   }
 
   // Main app with bottom navigation
@@ -100,8 +126,14 @@ function AppContent() {
     <Layout activeTab={activeTab} onTabChange={setActiveTab}>
       {activeTab === 'home' && (
         <Home
-          onOpenGuides={() => setActiveView('guides')}
-          onOpenInsights={() => setActiveView('insights')}
+          onOpenGuides={() => {
+            window.history.pushState({ view: 'guides' }, '', window.location.href);
+            setActiveView('guides');
+          }}
+          onOpenInsights={() => {
+            window.history.pushState({ view: 'insights' }, '', window.location.href);
+            setActiveView('insights');
+          }}
         />
       )}
       {activeTab === 'stats' && <Stats />}
