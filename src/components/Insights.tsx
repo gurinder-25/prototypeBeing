@@ -40,9 +40,17 @@ const Insights: React.FC<InsightsProps> = ({ onClose }) => {
   const [showProceed, setShowProceed] = useState(false);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [analyzingDots, setAnalyzingDots] = useState('');
+  const [questionCount, setQuestionCount] = useState(0);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const questionText = 'Need help in meditating?';
+  const questionTexts = [
+    'Need help in meditating?',
+    'Want more help? Happy to help more!',
+    'What else can I help you with?',
+    'Any other questions? I\'m here for you!',
+  ];
+
+  const questionText = questionTexts[Math.min(questionCount, questionTexts.length - 1)];
 
   // Typing animation for question
   useEffect(() => {
@@ -122,6 +130,7 @@ const Insights: React.FC<InsightsProps> = ({ onClose }) => {
     setViewState('input');
     setUserInput('');
     setAnalysis(null);
+    setQuestionCount(prev => prev + 1);
   };
 
   // Input View
