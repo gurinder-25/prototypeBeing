@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { LogOut, Lock, User as UserIcon, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { apiService } from '../services/apiService';
@@ -12,12 +12,21 @@ export const Profile = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: user?.name || '',
     age: user?.age?.toString() || '',
     gender: user?.gender || '',
     email: user?.email || '',
   });
+
+  // Simulate initial loading
+  useEffect(() => {
+    if (user) {
+      const timer = setTimeout(() => setIsInitialLoading(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [user]);
 
   const handleSave = async () => {
     if (user) {
@@ -71,6 +80,95 @@ export const Profile = () => {
     apiService.logout();
     logout();
   };
+
+  // Skeleton Loading State
+  if (isInitialLoading) {
+    return (
+      <div className="min-h-screen bg-black text-white px-6 py-8 pb-24">
+        <style>{`
+          @keyframes shimmer {
+            0% {
+              background-position: -200% 0;
+            }
+            100% {
+              background-position: 200% 0;
+            }
+          }
+          .skeleton {
+            background: linear-gradient(
+              90deg,
+              rgba(255, 255, 255, 0.03) 0%,
+              rgba(255, 255, 255, 0.08) 50%,
+              rgba(255, 255, 255, 0.03) 100%
+            );
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+          }
+        `}</style>
+
+        <div className="space-y-8">
+          {/* Title Skeleton */}
+          <div>
+            <div className="skeleton h-9 w-32 rounded-lg mb-2"></div>
+            <div className="skeleton h-4 w-48 rounded-lg"></div>
+          </div>
+
+          {/* Avatar and Name Skeleton */}
+          <div className="flex flex-col items-center gap-4">
+            <div className="skeleton w-24 h-24 rounded-full"></div>
+            <div className="flex flex-col items-center gap-2">
+              <div className="skeleton h-7 w-32 rounded-lg"></div>
+              <div className="skeleton h-4 w-24 rounded-lg"></div>
+            </div>
+          </div>
+
+          {/* Personal Details Card Skeleton */}
+          <div className="bg-zinc-900/30 rounded-3xl border border-zinc-800/50 overflow-hidden">
+            <div className="p-6 space-y-4">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="skeleton h-6 w-36 rounded-lg"></div>
+                <div className="skeleton h-5 w-12 rounded-lg"></div>
+              </div>
+
+              {/* Form Fields */}
+              <div className="space-y-4">
+                {/* Name Field */}
+                <div>
+                  <div className="skeleton h-4 w-16 rounded mb-2"></div>
+                  <div className="skeleton h-12 w-full rounded-xl"></div>
+                </div>
+
+                {/* Age and Gender Fields */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="skeleton h-4 w-12 rounded mb-2"></div>
+                    <div className="skeleton h-12 w-full rounded-xl"></div>
+                  </div>
+                  <div>
+                    <div className="skeleton h-4 w-16 rounded mb-2"></div>
+                    <div className="skeleton h-12 w-full rounded-xl"></div>
+                  </div>
+                </div>
+
+                {/* Email Field */}
+                <div>
+                  <div className="skeleton h-4 w-14 rounded mb-2"></div>
+                  <div className="skeleton h-12 w-full rounded-xl"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons Skeleton */}
+          <div className="space-y-3">
+            <div className="skeleton h-14 w-full rounded-2xl"></div>
+            <div className="skeleton h-14 w-full rounded-2xl"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white px-6 py-8 pb-24">

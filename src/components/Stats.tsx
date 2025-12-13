@@ -44,8 +44,71 @@ export const Stats = () => {
 
   if (loading || !stats) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-zinc-600">Loading...</div>
+      <div className="min-h-screen bg-black text-white px-6 py-8 pb-24">
+        <style>{`
+          @keyframes shimmer {
+            0% {
+              background-position: -200% 0;
+            }
+            100% {
+              background-position: 200% 0;
+            }
+          }
+          .skeleton {
+            background: linear-gradient(
+              90deg,
+              rgba(255, 255, 255, 0.03) 0%,
+              rgba(255, 255, 255, 0.08) 50%,
+              rgba(255, 255, 255, 0.03) 100%
+            );
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+          }
+        `}</style>
+
+        <div className="space-y-8">
+          {/* Title Skeleton */}
+          <div>
+            <div className="skeleton h-9 w-40 rounded-lg mb-2"></div>
+            <div className="skeleton h-4 w-56 rounded-lg"></div>
+          </div>
+
+          {/* Calendar Skeleton */}
+          <div className="bg-zinc-900/30 rounded-3xl border border-zinc-800/50 overflow-hidden">
+            <div className="p-5">
+              {/* Header with navigation */}
+              <div className="flex items-center justify-between mb-5">
+                <div className="skeleton w-9 h-9 rounded-full"></div>
+                <div className="skeleton h-6 w-32 rounded-lg"></div>
+                <div className="skeleton w-9 h-9 rounded-full"></div>
+              </div>
+
+              {/* Days of week */}
+              <div className="grid grid-cols-7 gap-1.5 mb-3">
+                {Array.from({ length: 7 }).map((_, i) => (
+                  <div key={i} className="skeleton h-3 rounded"></div>
+                ))}
+              </div>
+
+              {/* Calendar grid */}
+              <div className="grid grid-cols-7 gap-1.5">
+                {Array.from({ length: 35 }).map((_, i) => (
+                  <div key={i} className="skeleton aspect-square rounded-full"></div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Stats Cards Skeleton */}
+          <div className="grid grid-cols-2 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-zinc-900/30 rounded-3xl p-6 border border-zinc-800/50">
+                <div className="skeleton h-4 w-20 rounded mb-2"></div>
+                <div className="skeleton h-9 w-16 rounded-lg"></div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
