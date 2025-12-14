@@ -11,7 +11,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { apiService } from './services/apiService';
 
 // Configuration: Set to true for production (use localStorage), false for testing (always show check-in)
-const USE_DAILY_CHECKIN_STORAGE = false;
+const USE_DAILY_CHECKIN_STORAGE = true;
 
 function AppContent() {
   const { user } = useAuth();
@@ -68,14 +68,25 @@ function AppContent() {
     if (meditated && duration) {
       try {
         await apiService.saveSession(duration);
-        
+
         if (USE_DAILY_CHECKIN_STORAGE) {
           const today = new Date().toDateString();
           localStorage.setItem(`lastCheckIn_${user?.username}`, today);
         }
-        
+
         setHasCheckedInToday(true);
         setShowDailyCheckIn(false);
+
+        // In testing mode, allow showing check-in again after 2 seconds
+        // This lets you test multiple sessions per day
+        if (!USE_DAILY_CHECKIN_STORAGE) {
+          console.log('⏱️ Testing mode: Check-in will be available again in 2 seconds...');
+          setTimeout(() => {
+            setShowDailyCheckIn(true);
+            setHasCheckedInToday(false);
+            console.log('✅ Check-in ready again!');
+          }, 2000);
+        }
       } catch (error) {
         console.error('Failed to save session:', error);
         // Still proceed to main app even if save fails

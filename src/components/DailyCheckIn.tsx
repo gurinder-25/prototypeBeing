@@ -15,6 +15,7 @@ export const DailyCheckIn = ({ onComplete, onSkip }: DailyCheckInProps) => {
   const [isAnimating, setIsAnimating] = useState(true);
   const [selectedUnit, setSelectedUnit] = useState<'minutes' | 'seconds' | 'hours'>('minutes');
   const [hasMeditatedToday, setHasMeditatedToday] = useState(false);
+  const [isCheckingStorage, setIsCheckingStorage] = useState(true);
 
   // Check if user has already meditated today
   useEffect(() => {
@@ -22,23 +23,35 @@ export const DailyCheckIn = ({ onComplete, onSkip }: DailyCheckInProps) => {
       const today = new Date().toDateString();
       const sessionsData = localStorage.getItem('meditation_sessions_today');
 
+      console.log('🔍 Checking meditation sessions...');
+      console.log('Today:', today);
+      console.log('Sessions data:', sessionsData);
+
       if (sessionsData) {
         try {
           const sessions = JSON.parse(sessionsData);
           // Check if there are any sessions for today
           const todaySessions = sessions.filter((session: { date: string; duration: number }) => {
             const sessionDate = new Date(session.date).toDateString();
+            console.log('Session date:', sessionDate, 'Today:', today, 'Match:', sessionDate === today);
             return sessionDate === today;
           });
 
-          setHasMeditatedToday(todaySessions.length > 0);
+          console.log('Today sessions count:', todaySessions.length);
+          const hasMeditated = todaySessions.length > 0;
+          setHasMeditatedToday(hasMeditated);
+          console.log('✅ Has meditated today:', hasMeditated);
         } catch (error) {
           console.error('Error checking meditation sessions:', error);
           setHasMeditatedToday(false);
         }
       } else {
+        console.log('ℹ️ No sessions data found');
         setHasMeditatedToday(false);
       }
+
+      // Mark check as complete
+      setIsCheckingStorage(false);
     };
 
     checkTodaysSessions();
@@ -48,7 +61,15 @@ export const DailyCheckIn = ({ onComplete, onSkip }: DailyCheckInProps) => {
     ? (hasMeditatedToday ? 'Did you meditate again today??' : 'Did you meditate today?')
     : 'How long did you meditate?';
 
+  // Debug log
+  console.log('💬 Question text:', questionText, '| Has meditated:', hasMeditatedToday);
+
   useEffect(() => {
+    // Don't start typing animation until localStorage check is complete
+    if (isCheckingStorage) {
+      return;
+    }
+
     setDisplayedText('');
     setShowButtons(false);
     setIsAnimating(true);
@@ -66,7 +87,7 @@ export const DailyCheckIn = ({ onComplete, onSkip }: DailyCheckInProps) => {
     }, 50);
 
     return () => clearInterval(typingInterval);
-  }, [step]);
+  }, [step, isCheckingStorage, questionText]);
 
   const handleYes = () => {
     setStep('duration');
@@ -116,6 +137,8 @@ export const DailyCheckIn = ({ onComplete, onSkip }: DailyCheckInProps) => {
       });
 
       localStorage.setItem('meditation_sessions_today', JSON.stringify(sessions));
+      console.log('💾 Saved meditation session:', { date: today, duration: durationInSeconds });
+      console.log('📊 Total sessions today:', sessions.length);
 
       onComplete(true, durationInSeconds);
     }
