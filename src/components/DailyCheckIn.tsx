@@ -14,9 +14,38 @@ export const DailyCheckIn = ({ onComplete, onSkip }: DailyCheckInProps) => {
   const [unit, setUnit] = useState<'minutes' | 'seconds' | 'hours'>('minutes');
   const [isAnimating, setIsAnimating] = useState(true);
   const [selectedUnit, setSelectedUnit] = useState<'minutes' | 'seconds' | 'hours'>('minutes');
+  const [hasMeditatedToday, setHasMeditatedToday] = useState(false);
 
-  const questionText = step === 'question' 
-    ? 'Did you meditate today?' 
+  // Check if user has already meditated today
+  useEffect(() => {
+    const checkTodaysSessions = () => {
+      const today = new Date().toDateString();
+      const sessionsData = localStorage.getItem('meditation_sessions_today');
+
+      if (sessionsData) {
+        try {
+          const sessions = JSON.parse(sessionsData);
+          // Check if there are any sessions for today
+          const todaySessions = sessions.filter((session: { date: string; duration: number }) => {
+            const sessionDate = new Date(session.date).toDateString();
+            return sessionDate === today;
+          });
+
+          setHasMeditatedToday(todaySessions.length > 0);
+        } catch (error) {
+          console.error('Error checking meditation sessions:', error);
+          setHasMeditatedToday(false);
+        }
+      } else {
+        setHasMeditatedToday(false);
+      }
+    };
+
+    checkTodaysSessions();
+  }, []);
+
+  const questionText = step === 'question'
+    ? (hasMeditatedToday ? 'Did you meditate again today??' : 'Did you meditate today?')
     : 'How long did you meditate?';
 
   useEffect(() => {
@@ -60,6 +89,34 @@ export const DailyCheckIn = ({ onComplete, onSkip }: DailyCheckInProps) => {
     }
 
     if (durationInSeconds > 0) {
+      // Save session to localStorage for tracking multiple sessions per day
+      const today = new Date().toISOString();
+      const sessionsData = localStorage.getItem('meditation_sessions_today');
+      let sessions = [];
+
+      if (sessionsData) {
+        try {
+          sessions = JSON.parse(sessionsData);
+          // Clean up old sessions (keep only today's)
+          const todayDate = new Date().toDateString();
+          sessions = sessions.filter((session: { date: string; duration: number }) => {
+            const sessionDate = new Date(session.date).toDateString();
+            return sessionDate === todayDate;
+          });
+        } catch (error) {
+          console.error('Error parsing meditation sessions:', error);
+          sessions = [];
+        }
+      }
+
+      // Add new session
+      sessions.push({
+        date: today,
+        duration: durationInSeconds,
+      });
+
+      localStorage.setItem('meditation_sessions_today', JSON.stringify(sessions));
+
       onComplete(true, durationInSeconds);
     }
   };
