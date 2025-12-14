@@ -1,0 +1,536 @@
+================================================================================
+                  BEINGONE PWA - BACKEND API REQUIREMENTS
+                      Frontend to Backend Integration
+================================================================================
+
+Project: BeingOne Meditation Tracker PWA
+Document Version: 1.0
+Date: December 2025
+Prepared by: Frontend Development Team
+
+================================================================================
+                            TABLE OF CONTENTS
+================================================================================
+
+1. Overview
+2. API #1: Daily Meditation Quotes
+3. API #2: Meditation Guides
+4. API #3: AI-Powered Meditation Insights (LLM Integration)
+5. Authentication Requirements
+6. Error Handling Standards
+7. Notes for Backend Implementation
+
+================================================================================
+                              1. OVERVIEW
+================================================================================
+
+This document outlines the API endpoints required by the BeingOne PWA frontend
+application. Currently, the frontend uses mock/hardcoded data for three main
+features:
+
+- Daily meditation quotes displayed on the home screen
+- Meditation guides (articles/resources)
+- AI-powered meditation insights using ChatGPT/LLM
+
+All APIs should follow RESTful principles and return JSON responses.
+Authentication is handled via JWT tokens stored in sessionStorage.
+
+Base URL: https://meditation-tracker1.gurinder.dev
+All authenticated endpoints require: Authorization: Bearer <jwt_token>
+
+================================================================================
+                    2. API #1: DAILY MEDITATION QUOTES
+================================================================================
+
+PURPOSE:
+--------
+Provide inspirational meditation quotes to display on the home screen.
+Quotes rotate every 12 seconds on the frontend.
+
+ENDPOINT:
+---------
+GET /api/quotes/daily
+
+OR
+
+GET /api/quotes/random
+
+AUTHENTICATION:
+---------------
+Optional (can work for only for authenticated users)
+
+REQUEST HEADERS:
+----------------
+Content-Type: application/json
+Authorization: Bearer <jwt_token> (optional)
+
+REQUEST PARAMETERS:
+-------------------
+None required
+
+EXPECTED RESPONSE (Success - 200 OK):
+--------------------------------------
+{
+  "quote": {
+    "id": "q123",
+    "text": "The present moment is the only time over which we have dominion.",
+    "author": "Thích Nhất Hạnh"
+  }
+}
+
+
+CURRENT FRONTEND IMPLEMENTATION:
+---------------------------------
+Location: src/components/Home.tsx (lines 5-38)
+Current: Hardcoded array of 8 quotes
+Usage: Randomly selects and displays one quote, rotates every 12 seconds
+
+FRONTEND INTEGRATION APPROACH:
+-------------------------------
+Option 1: Fetch one random quote every 12 seconds
+Option 2: Fetch 5-10 quotes on component mount, rotate through them locally
+
+RECOMMENDED OPTION: Option 2 (reduces API calls)
+
+ERROR RESPONSES:
+----------------
+500 Internal Server Error:
+{
+  "error": "Failed to fetch quotes",
+  "message": "Database connection error"
+}
+
+================================================================================
+                    3. API #2: MEDITATION GUIDES
+================================================================================
+
+PURPOSE:
+--------
+Provide educational articles and guides about meditation practices.
+Users can browse a list of guides and view detailed content.
+
+--------------------------------------------------------------------------------
+3.1 GET ALL GUIDES (List View)
+--------------------------------------------------------------------------------
+
+ENDPOINT:
+---------
+GET /api/guides
+
+AUTHENTICATION:
+---------------
+Required (JWT token)
+
+REQUEST HEADERS:
+----------------
+Content-Type: application/json
+Authorization: Bearer <jwt_token>
+
+REQUEST PARAMETERS (Optional):
+-------------------------------
+?category=beginner|intermediate|advanced
+?limit=10
+?offset=0
+
+EXPECTED RESPONSE (Success - 200 OK):
+--------------------------------------
+{
+  "guides": [
+    {
+      "id": "guide_001",
+      "title": "Getting Started with Meditation",
+      "description": "A beginner-friendly introduction to meditation practice and its foundational principles.",
+      "readTime": "3 min read",
+      "category": "Beginner",
+      "author": "BeingOne Team",
+      "thumbnail": "https://example.com/image.jpg" (optional),
+      "createdAt": "2024-12-01T10:00:00Z",
+      "updatedAt": "2024-12-01T10:00:00Z"
+    },
+    {
+      "id": "guide_002",
+      "title": "Dealing with Racing Thoughts",
+      "description": "Practical strategies to manage a busy mind during meditation sessions.",
+      "readTime": "3 min read",
+      "category": "Beginner",
+      "author": "BeingOne Team",
+      "thumbnail": "https://example.com/image2.jpg" (optional),
+      "createdAt": "2024-12-02T10:00:00Z",
+      "updatedAt": "2024-12-02T10:00:00Z"
+    }
+  ],
+  "total": 25,
+  "limit": 10,
+  "offset": 0
+}
+
+--------------------------------------------------------------------------------
+3.2 GET SINGLE GUIDE (Detail View)
+--------------------------------------------------------------------------------
+
+ENDPOINT:
+---------
+GET /api/guides/:guideId
+
+AUTHENTICATION:
+---------------
+Required (JWT token)
+
+REQUEST HEADERS:
+----------------
+Content-Type: application/json
+Authorization: Bearer <jwt_token>
+
+REQUEST PARAMETERS:
+-------------------
+:guideId (path parameter) - The unique ID of the guide
+
+EXPECTED RESPONSE (Success - 200 OK):
+--------------------------------------
+{
+  "guide": {
+    "id": "guide_001",
+    "title": "Getting Started with Meditation",
+    "description": "A beginner-friendly introduction to meditation practice and its foundational principles.",
+    "readTime": "3 min read",
+    "category": "Beginner",
+    "author": "BeingOne Team",
+    "thumbnail": "https://example.com/image.jpg" (optional),
+    "content": [
+      "Meditation is a practice of focused attention that brings clarity and calmness to your mind. It's not about stopping your thoughts, but learning to observe them without judgment.",
+      "Start with just 5 minutes a day. Find a quiet space, sit comfortably, and focus on your breath. When your mind wanders (and it will), gently bring your attention back to your breathing.",
+      "Consistency matters more than duration. A daily 5-minute practice is more valuable than an occasional 30-minute session.",
+      "Be patient with yourself. Meditation is a skill that develops over time. Some days will feel easier than others, and that's completely normal."
+    ],
+    "relatedGuides": ["guide_003", "guide_005"] (optional),
+    "tags": ["beginner", "breathing", "mindfulness"] (optional),
+    "createdAt": "2024-12-01T10:00:00Z",
+    "updatedAt": "2024-12-01T10:00:00Z"
+  }
+}
+
+CURRENT FRONTEND IMPLEMENTATION:
+---------------------------------
+Location: src/components/Guides.tsx (lines 4-45)
+Current: Hardcoded array of 2 guide articles
+Data Structure:
+  - id: string
+  - title: string
+  - description: string
+  - readTime: string
+  - category: string
+  - content: string[] (array of paragraphs)
+  - author: string
+
+FRONTEND BEHAVIOR:
+------------------
+1. Shows list of guides with title, description, category, readTime
+2. User clicks on a guide to view full content
+3. Back button returns to guide list
+
+ERROR RESPONSES:
+----------------
+404 Not Found:
+{
+  "error": "Guide not found",
+  "message": "The requested guide does not exist"
+}
+
+401 Unauthorized:
+{
+  "error": "Unauthorized",
+  "message": "Valid authentication token required"
+}
+
+500 Internal Server Error:
+{
+  "error": "Failed to fetch guides",
+  "message": "Database connection error"
+}
+
+================================================================================
+              4. API #3: AI-POWERED MEDITATION INSIGHTS
+                      (LLM Integration Required)
+================================================================================
+
+PURPOSE:
+--------
+Provide personalized meditation advice and insights using AI (ChatGPT/LLM).
+Users describe their meditation challenges/questions and receive tailored
+guidance with understanding, insights, and actionable steps.
+
+IMPORTANT NOTE:
+---------------
+This requires backend integration with an LLM API (OpenAI GPT, Anthropic Claude,
+Google Gemini, or similar). The backend should handle the LLM API calls and
+return structured responses to the frontend.
+
+--------------------------------------------------------------------------------
+4.1 GENERATE AI INSIGHTS
+--------------------------------------------------------------------------------
+
+ENDPOINT:
+---------
+POST /api/insights/analyze
+
+AUTHENTICATION:
+---------------
+Required (JWT token)
+
+REQUEST HEADERS:
+----------------
+Content-Type: application/json
+Authorization: Bearer <jwt_token>
+
+REQUEST BODY:
+-------------
+{
+  "userInput": "I struggle to maintain focus during meditation. My mind keeps wandering to work tasks and I feel frustrated.",
+  "sessionContext": {
+    "userLevel": "beginner" (optional - from user profile),
+    "previousSessions": 15 (optional - total meditation sessions),
+    "avgDuration": 10 (optional - in minutes)
+  }
+}
+
+EXPECTED RESPONSE (Success - 200 OK):
+--------------------------------------
+{
+  "analysis": {
+    "id": "insight_12345",
+    "userInput": "I struggle to maintain focus during meditation...",
+    "understanding": "What you're experiencing is incredibly common among meditators at all levels. The mind's tendency to wander isn't a failure - it's actually the training ground for developing awareness. Each time you notice your attention has drifted and gently bring it back, you're strengthening your capacity for presence and focus.",
+    "insights": [
+      "A wandering mind during meditation is not a sign of doing it wrong - it's completely natural and part of the process",
+      "The real practice happens in the moment you notice you've drifted and choose to return your attention",
+      "Building consistency matters more than the quality of any single session - progress comes from showing up regularly",
+      "Your challenges are unique opportunities to develop patience, self-compassion, and deeper understanding"
+    ],
+    "actionableSteps": [
+      "Start with just 5 minutes daily at the same time each day to build a sustainable habit",
+      "Choose one anchor point (breath, body sensation, sound) and gently return to it when you notice you've drifted",
+      "Practice self-compassion when your mind wanders - treat yourself with the same kindness you'd offer a good friend",
+      "Keep a simple practice journal noting what you observe, without judgment or expectation"
+    ],
+    "category": "Focus & Concentration" (optional),
+    "relatedGuides": ["guide_001", "guide_003"] (optional),
+    "createdAt": "2024-12-14T15:30:00Z"
+  }
+}
+
+CURRENT FRONTEND IMPLEMENTATION:
+---------------------------------
+Location: src/components/Insights.tsx (lines 4-27)
+Current: generateMockAnalysis() function returns static response
+Data Structure:
+  - understanding: string (paragraph explaining their experience)
+  - insights: string[] (3-4 key insights as bullet points)
+  - actionableSteps: string[] (3-4 practical steps as bullet points)
+
+FRONTEND USER FLOW:
+-------------------
+1. User types their meditation question/challenge
+2. Clicks "Continue" button
+3. Shows "Analysing..." loading state
+4. Displays results with three sections:
+   - Understanding of Your Experience
+   - Insights (bullet points)
+   - Actionable Steps (numbered steps)
+5. User can ask a new question or close
+
+LLM INTEGRATION REQUIREMENTS:
+------------------------------
+
+BACKEND SHOULD:
+1. Accept user input text (meditation question/challenge)
+2. Construct appropriate prompt for LLM API
+3. Call LLM API (OpenAI GPT-4, Claude, etc.)
+4. Parse LLM response into structured format
+5. Return formatted JSON to frontend
+
+RECOMMENDED LLM SYSTEM PROMPT:
+-------------------------------
+"You are a compassionate meditation coach with expertise in mindfulness practices.
+A user has shared their meditation challenge or question. Provide helpful,
+evidence-based guidance in three parts:
+
+1. Understanding: A paragraph acknowledging their experience and providing context
+2. Insights: 3-4 key insights as separate points (each 1-2 sentences)
+3. Actionable Steps: 3-4 specific, practical steps they can take (each 1-2 sentences)
+
+Keep responses warm, encouraging, non-judgmental, and grounded in meditation
+best practices. Avoid medical advice."
+
+SAMPLE LLM APIS TO CONSIDER:
+-----------------------------
+- OpenAI GPT-4 API (most popular)
+- Anthropic Claude API (good for nuanced responses)
+- Google Gemini API
+- Hugging Face Inference API (open-source models)
+
+RATE LIMITING CONSIDERATION:
+-----------------------------
+Consider implementing:
+- Per-user rate limits (e.g., 10 insights per day)
+- Caching common questions/responses
+- Usage tracking for billing purposes
+
+ERROR RESPONSES:
+----------------
+400 Bad Request (Invalid input):
+{
+  "error": "Invalid input",
+  "message": "User input must be at least 10 characters"
+}
+
+429 Too Many Requests (Rate limit):
+{
+  "error": "Rate limit exceeded",
+  "message": "You have reached your daily limit of 10 insights. Please try again tomorrow.",
+  "retryAfter": "2024-12-15T00:00:00Z"
+}
+
+503 Service Unavailable (LLM API down):
+{
+  "error": "Service temporarily unavailable",
+  "message": "AI service is currently unavailable. Please try again later."
+}
+
+500 Internal Server Error:
+{
+  "error": "Failed to generate insights",
+  "message": "An error occurred while processing your request"
+}
+
+================================================================================
+                    5. AUTHENTICATION REQUIREMENTS
+================================================================================
+
+All the above APIs (except quotes which is optional) require JWT authentication.
+
+TOKEN FORMAT:
+-------------
+Authorization: Bearer <jwt_token>
+
+TOKEN LOCATION:
+---------------
+Frontend stores JWT in sessionStorage under key: 'jwt_token'
+
+TOKEN VALIDATION:
+-----------------
+Backend should validate:
+- Token is not expired
+- Token signature is valid
+- User exists in database
+
+EXISTING AUTH ENDPOINTS (Already Implemented):
+-----------------------------------------------
+POST /users/login
+POST /users/signup
+GET /users/me
+PUT /users/me
+POST /users/resetpassword
+
+================================================================================
+                    6. ERROR HANDLING STANDARDS
+================================================================================
+
+All API errors should follow this format:
+
+{
+  "error": "Error Type",
+  "message": "Human-readable error description",
+  "statusCode": 400,
+  "timestamp": "2024-12-14T15:30:00Z" (optional),
+  "path": "/api/guides" (optional)
+}
+
+HTTP STATUS CODES TO USE:
+--------------------------
+200 - Success
+201 - Created (not needed for these APIs)
+400 - Bad Request (invalid input)
+401 - Unauthorized (missing/invalid token)
+403 - Forbidden (valid token but no permission)
+404 - Not Found (resource doesn't exist)
+429 - Too Many Requests (rate limiting)
+500 - Internal Server Error
+503 - Service Unavailable (LLM API down)
+
+================================================================================
+              7. NOTES FOR BACKEND IMPLEMENTATION
+================================================================================
+
+PRIORITY ORDER:
+---------------
+1. Daily Quotes API (Simplest - can be done quickly)
+2. Guides API (Medium complexity - database CRUD)
+3. Insights API (Most complex - requires LLM integration)
+
+DATA STORAGE RECOMMENDATIONS:
+------------------------------
+
+QUOTES:
+- Store in database table with: id, text, author, category, language
+- Seed with 20-50 quality meditation quotes
+- Can use a quotes API or manually curate
+
+GUIDES:
+- Store in database table with: id, title, description, content, category, etc.
+- Content can be stored as JSON array or text field
+- Consider markdown support for rich formatting (optional)
+- Seed with 5-10 beginner guides initially
+
+INSIGHTS:
+- Log all user questions and AI responses in database
+- Store: userId, userInput, aiResponse, timestamp
+- Useful for analytics and improving prompts
+- Consider caching common questions
+
+LLM INTEGRATION TIPS:
+---------------------
+1. Use environment variables for API keys
+2. Implement retry logic for LLM API failures
+3. Add timeout handling (30-second timeout recommended)
+4. Stream responses if LLM supports it (for better UX)
+5. Sanitize user input to prevent prompt injection
+6. Monitor LLM API costs and usage
+
+TESTING RECOMMENDATIONS:
+------------------------
+1. Provide Postman/Thunder Client collection for testing
+2. Include sample request/response examples
+3. Document any rate limits or quotas
+4. Test with invalid tokens, missing fields, etc.
+
+PERFORMANCE CONSIDERATIONS:
+---------------------------
+- Cache quotes (they rarely change)
+- Index guides by category for faster queries
+- Consider CDN for guide thumbnails (if used)
+- Monitor LLM API latency and add fallbacks
+
+FUTURE ENHANCEMENTS (Optional):
+--------------------------------
+- User can save/bookmark favorite guides
+- User can save/share insights
+- Track which guides user has read
+- Personalize quote recommendations based on user preferences
+- Multi-language support for quotes and guides
+
+================================================================================
+                              CONTACT & SUPPORT
+================================================================================
+
+For questions about these API requirements, please contact:
+- Frontend Development Team
+- Project Repository: [Add GitHub/GitLab link]
+
+Expected Timeline:
+- Daily Quotes API: 1-2 days
+- Guides API: 3-5 days
+- Insights API (with LLM): 5-7 days
+
+================================================================================
+                            END OF DOCUMENT
+================================================================================

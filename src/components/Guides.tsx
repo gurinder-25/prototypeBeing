@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, BookOpen, Clock, ChevronRight } from 'lucide-react';
 
 interface GuideArticle {
@@ -51,12 +51,33 @@ interface GuidesProps {
 const Guides: React.FC<GuidesProps> = ({ onClose }) => {
   const [selectedArticle, setSelectedArticle] = useState<GuideArticle | null>(null);
 
+  // Handle browser back button
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state?.guideView === 'article') {
+        // We're on an article, do nothing (let it stay)
+      } else {
+        // Going back from article to list
+        setSelectedArticle(null);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
   const handleArticleClick = (article: GuideArticle) => {
+    // Push state when opening an article
+    window.history.pushState({ view: 'guides', guideView: 'article' }, '', window.location.href);
     setSelectedArticle(article);
   };
 
   const handleBackToList = () => {
-    setSelectedArticle(null);
+    // Go back in history instead of just setting state
+    window.history.back();
   };
 
   // Article List View
