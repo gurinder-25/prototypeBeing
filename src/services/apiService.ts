@@ -2,19 +2,19 @@ import { User, Stats } from '../types';
 
 const API_BASE_URL = 'https://meditation-tracker1.gurinder.dev';
 
-// Helper to get token from sessionStorage
+// Helper to get token from localStorage
 const getToken = (): string | null => {
-  return sessionStorage.getItem('jwt_token');
+  return localStorage.getItem('jwt_token');
 };
 
-// Helper to set token in sessionStorage
+// Helper to set token in localStorage
 const setToken = (token: string): void => {
-  sessionStorage.setItem('jwt_token', token);
+  localStorage.setItem('jwt_token', token);
 };
 
-// Helper to remove token from sessionStorage
+// Helper to remove token from localStorage
 const removeToken = (): void => {
-  sessionStorage.removeItem('jwt_token');
+  localStorage.removeItem('jwt_token');
 };
 
 // Helper to create headers with auth token

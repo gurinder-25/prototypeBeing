@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types';
+import { isTokenValid } from '../utils/jwtUtils';
 
 interface AuthContextType {
   user: User | null;
@@ -18,12 +19,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     // Check if user has a valid token on mount
     const checkAuth = async () => {
-      const token = sessionStorage.getItem('jwt_token');
-      
+      const token = localStorage.getItem('jwt_token');
+
       if (token) {
+        // First check if JWT is expired (client-side validation)
+        if (!isTokenValid(token)) {
+          console.log('JWT token expired or invalid, logging out');
+          localStorage.removeItem('jwt_token');
+          setLoading(false);
+          return;
+        }
+
         try {
-          // Try to fetch user details with the stored token
-          const response = await fetch('http://localhost:8080/users/me', {
+          // Verify token with backend
+          const response = await fetch('https://meditation-tracker1.gurinder.dev/users/me', {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -43,15 +52,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
               phoneNumber: userData.email,
             });
           } else {
-            // Token is invalid, clear it
-            sessionStorage.removeItem('jwt_token');
+            // Token is invalid on backend, clear it
+            console.log('Backend rejected token, logging out');
+            localStorage.removeItem('jwt_token');
           }
         } catch (error) {
           console.error('Auth check failed:', error);
-          sessionStorage.removeItem('jwt_token');
+          localStorage.removeItem('jwt_token');
         }
       }
-      
+
       setLoading(false);
     };
 
@@ -64,7 +74,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     setUser(null);
-    sessionStorage.removeItem('jwt_token');
+    localStorage.removeItem('jwt_token');
   };
 
   const updateUser = (user: User) => {
