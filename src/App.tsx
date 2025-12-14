@@ -10,14 +10,13 @@ import Insights from './components/Insights';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { apiService } from './services/apiService';
 
-// Configuration: Set to true for production (use localStorage), false for testing (always show check-in)
-const USE_DAILY_CHECKIN_STORAGE = true;
+// Configuration: Set to true to enable 2-second auto-repeat for testing, false for production
+const ENABLE_TESTING_AUTO_REPEAT = false;
 
 function AppContent() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'home' | 'stats' | 'profile'>('home');
   const [showDailyCheckIn, setShowDailyCheckIn] = useState(false);
-  const [hasCheckedInToday, setHasCheckedInToday] = useState(false);
   const [activeView, setActiveView] = useState<'main' | 'guides' | 'insights'>('main');
 
   // Handle browser back button
@@ -42,25 +41,10 @@ function AppContent() {
     };
   }, []);
 
-  // Check if user has already checked in today
+  // Always show daily check-in when user logs in
   useEffect(() => {
     if (user) {
-      if (USE_DAILY_CHECKIN_STORAGE) {
-        // Production mode: Check localStorage
-        const lastCheckIn = localStorage.getItem(`lastCheckIn_${user.username}`);
-        const today = new Date().toDateString();
-        
-        if (lastCheckIn !== today) {
-          setShowDailyCheckIn(true);
-          setHasCheckedInToday(false);
-        } else {
-          setHasCheckedInToday(true);
-        }
-      } else {
-        // Testing mode: Always show check-in
-        setShowDailyCheckIn(true);
-        setHasCheckedInToday(false);
-      }
+      setShowDailyCheckIn(true);
     }
   }, [user]);
 
@@ -68,41 +52,26 @@ function AppContent() {
     if (meditated && duration) {
       try {
         await apiService.saveSession(duration);
-
-        if (USE_DAILY_CHECKIN_STORAGE) {
-          const today = new Date().toDateString();
-          localStorage.setItem(`lastCheckIn_${user?.username}`, today);
-        }
-
-        setHasCheckedInToday(true);
         setShowDailyCheckIn(false);
 
         // In testing mode, allow showing check-in again after 2 seconds
         // This lets you test multiple sessions per day
-        if (!USE_DAILY_CHECKIN_STORAGE) {
+        if (ENABLE_TESTING_AUTO_REPEAT) {
           console.log('⏱️ Testing mode: Check-in will be available again in 2 seconds...');
           setTimeout(() => {
             setShowDailyCheckIn(true);
-            setHasCheckedInToday(false);
             console.log('✅ Check-in ready again!');
           }, 2000);
         }
       } catch (error) {
         console.error('Failed to save session:', error);
         // Still proceed to main app even if save fails
-        setHasCheckedInToday(true);
         setShowDailyCheckIn(false);
       }
     }
   };
 
   const handleCheckInSkip = () => {
-    if (USE_DAILY_CHECKIN_STORAGE) {
-      const today = new Date().toDateString();
-      localStorage.setItem(`lastCheckIn_${user?.username}`, today);
-    }
-    
-    setHasCheckedInToday(true);
     setShowDailyCheckIn(false);
   };
 
@@ -110,7 +79,7 @@ function AppContent() {
     return <Auth />;
   }
 
-  if (showDailyCheckIn && !hasCheckedInToday) {
+  if (showDailyCheckIn) {
     return (
       <DailyCheckIn
         onComplete={handleCheckInComplete}
