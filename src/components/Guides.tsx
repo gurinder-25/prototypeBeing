@@ -271,16 +271,6 @@ const Guides: React.FC<GuidesProps> = ({ onClose }) => {
             </p>
           ))}
         </div>
-
-        {/* Bottom CTA */}
-        <div
-          className="mt-12 p-6 rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl"
-          style={{ animation: 'fade-in 0.6s ease-out 1s both' }}
-        >
-          <p className="text-center text-zinc-400 text-sm">
-            Ready to practice? Start a meditation session now.
-          </p>
-        </div>
       </article>
 
       <style>{`
