@@ -149,14 +149,14 @@ export const Home = ({ onOpenGuides }: HomeProps) => {
           }
         `}</style>
 
-        {/* Header Section */}
-        <div className="relative z-10 pt-8 pb-6 fade-in">
-          <h1 className="text-lg font-medium text-zinc-400 mb-3">BeingOne</h1>
-          <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-light tracking-tight">
+        {/* Header Section - Made Bigger */}
+        <div className="relative z-10 pt-10 pb-8 fade-in">
+          <h1 className="text-2xl font-medium text-zinc-400 mb-5">BeingOne</h1>
+          <div className="flex items-center gap-4">
+            <h2 className="text-4xl font-light tracking-tight">
               Hi, <span className="font-medium">{user?.name || user?.username || 'there'}</span>
             </h2>
-            <Sparkles size={22} className="text-zinc-600 float-animation" />
+            <Sparkles size={28} className="text-zinc-600 float-animation" />
           </div>
         </div>
 
@@ -187,7 +187,7 @@ export const Home = ({ onOpenGuides }: HomeProps) => {
           </div>
         </div>
 
-        {/* Bottom Action Button - Back to Original Size */}
+        {/* Bottom Action Button - Original Size */}
         <div className="relative z-10 pt-4 pb-8 fade-in" style={{ animationDelay: '0.4s' }}>
           <button
             onClick={handleGuides}
