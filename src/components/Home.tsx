@@ -149,7 +149,7 @@ export const Home = ({ onOpenGuides }: HomeProps) => {
           }
         `}</style>
 
-        {/* Header Section - Made Smaller */}
+        {/* Header Section */}
         <div className="relative z-10 pt-8 pb-6 fade-in">
           <h1 className="text-lg font-medium text-zinc-400 mb-3">BeingOne</h1>
           <div className="flex items-center gap-3">
@@ -160,7 +160,7 @@ export const Home = ({ onOpenGuides }: HomeProps) => {
           </div>
         </div>
 
-        {/* Main Content - Quote Section - Made Bigger */}
+        {/* Main Content - Quote Section */}
         <div className="relative z-10 py-8">
           <div className="w-full max-w-2xl mx-auto fade-in" style={{ animationDelay: '0.2s' }}>
             <div className="glass-morphism rounded-[2.5rem] p-8 relative overflow-hidden">
@@ -187,24 +187,24 @@ export const Home = ({ onOpenGuides }: HomeProps) => {
           </div>
         </div>
 
-        {/* Bottom Action Button - Made Bigger */}
-        <div className="relative z-10 pt-8 pb-8 fade-in" style={{ animationDelay: '0.4s' }}>
+        {/* Bottom Action Button - Back to Original Size */}
+        <div className="relative z-10 pt-4 pb-8 fade-in" style={{ animationDelay: '0.4s' }}>
           <button
             onClick={handleGuides}
-            className="w-full glass-morphism rounded-[2rem] p-7 hover:bg-white/[0.06] transition-all duration-500 active:scale-[0.98] group relative overflow-hidden"
+            className="w-full glass-morphism rounded-[2rem] p-5 hover:bg-white/[0.06] transition-all duration-500 active:scale-[0.98] group relative overflow-hidden"
           >
             <div className="absolute inset-0 shimmer opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             <div className="relative flex items-center justify-between">
-              <div className="flex items-center gap-5">
-                <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-all duration-500">
-                  <BookOpen size={24} className="text-zinc-400 group-hover:text-white transition-colors duration-500" />
+              <div className="flex items-center gap-4">
+                <div className="w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-all duration-500">
+                  <BookOpen size={20} className="text-zinc-400 group-hover:text-white transition-colors duration-500" />
                 </div>
                 <div className="text-left">
-                  <h3 className="text-lg font-medium tracking-tight mb-1">Guides</h3>
-                  <p className="text-base text-zinc-600 group-hover:text-zinc-500 transition-colors duration-500">Learn meditation techniques</p>
+                  <h3 className="text-base font-medium tracking-tight mb-0.5">Guides</h3>
+                  <p className="text-sm text-zinc-600 group-hover:text-zinc-500 transition-colors duration-500">Learn meditation techniques</p>
                 </div>
               </div>
-              <ChevronRight size={24} className="text-zinc-600 group-hover:text-zinc-400 group-hover:translate-x-1 transition-all duration-300" />
+              <ChevronRight size={20} className="text-zinc-600 group-hover:text-zinc-400 group-hover:translate-x-1 transition-all duration-300" />
             </div>
           </button>
         </div>
